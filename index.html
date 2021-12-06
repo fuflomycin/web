@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Фуфломицины</title>
+	<link rel="shortcut icon" href="favicon.png">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link href="https://fonts.googleapis.com/css2?family=Exo+2&family=Montserrat:wght@400;500;800&family=Nunito:wght@300;400&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="css/main.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.8.1/lottie.min.js" integrity="sha512-V1YyTKZJrzJNhcKthpNAaohFXBnu5K9j7Qiz6gv1knFuf13TW/3vpgVVhJu9fvbdW8lb5J6czIhD4fWK2iHKXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	
+</head>
+<body>
+	<!-- <script src="https://unpkg.com/@lottiefiles/lottie-interactivity@latest/dist/lottie-interactivity.min.js"></script> -->
+	<section id="header"></section>
+	<div class="container"></div>
+	<div class="firstAidKit"></div>
+	<div class="pageUp"><i class="fas fa-arrow-up"></i></div>
+	<script type="text/javascript">
+	// Config
+	(function(){
+		let emailSupport = 'fuflomycin@bnd.by',
+		photoBaseUrl = 'https://raw.githubusercontent.com/fuflomycin/fuflomycin/master/docs/img/';
+
+
+		let container = document.querySelector('.container'),
+			header = document.querySelector('#header'),
+			pageUpDiv = document.querySelector('.pageUp'),
+			firstAidKitDiv = document.querySelector('.firstAidKit'),
+			inpVal,
+			scrollY = 0,
+			isPageUp = true,
+			aVal = true,
+			bVal = false;
+
+		// setTimeout(function(){
+		// 	let body = document.querySelector('body');
+		// 	let scriptTag = document.createElement('script');
+		// 	scriptTag.src = 'libs/lottie.min.js';
+		// 	body.appendChild(scriptTag);
+		// }, 3000);
+		getListOfFuflomicinsAndStartApp();
+
+		async function getListOfFuflomicinsAndStartApp(){
+			let rsp = await fetch('https://raw.githubusercontent.com/fuflomycin/fuflomycin/master/docs/rsp.json');
+			let homeopathy = await fetch('https://raw.githubusercontent.com/fuflomycin/fuflomycin/master/docs/homeopathy.json');
+			let fk = await fetch('https://raw.githubusercontent.com/fuflomycin/fuflomycin/master/docs/fk.json');
+
+			rsp = await rsp.json();
+			homeopathy = await homeopathy.json();
+			fk = await fk.json();
+
+			let fullData = rsp.concat(homeopathy, fk);
+			fullData = quickSort(fullData);
+
+			let firstAidKit = '<h2>TEXT</h2>'
+			main(fullData, firstAidKit);
+		}	
+
+
+		function main(listOfFuflos, firstAidKit){
+			(function firstLoad(){
+				if(location.hash === ''){ 
+					showMainPage(listOfFuflos, ''); 
+					// showfirstAidKitBlock();
+				}
+				else if(location.hash === '#aptechka'){
+					showBackHeader('Аптечка');
+					showfirstAidKitCard();
+				}else{
+					showCardPage(listOfFuflos); 
+				}
+			})();
+			
+
+			window.onhashchange = function(e){
+				if(location.hash === ''){ //Если страница главная, то создаем основную шапку и показываем весь список фуфломицинов.
+					showMainPage(listOfFuflos, inpVal);
+
+					// document.querySelector('#times').style.display = 'block';
+					showOrHideTimes(inpVal);
+				}else{ //Если в url какой-то путь, то ищем его в списке перпаратов по id. Если найден, то отображаем перпарат и информацию о нем.
+					if(location.hash === '#aptechka'){
+						showBackHeader('Аптечка');
+						showfirstAidKitCard();
+					}else{
+						showCardPage(listOfFuflos);
+					}
+					window.scrollTo(0,0);
+				}
+			}
+
+
+			document.oninput = function(e){ //Поиск перпаратов
+				if(e.target.id === 'input'){
+					showOrHideTimes(e.target.value);
+					searchAndShowList(listOfFuflos);
+				}
+			}
+
+
+			document.onclick = function(e){
+				if(e.target.className === 'fillBlock'){ //BLOCK
+					scrollY = window.scrollY;
+					hideFirstAidKitBlock();
+					if(e.target.id === 'firstAidKit'){
+						showfirstAidKitCard();
+						location.hash = 'aptechka';
+					}else{
+						let itemIndex = findIndexOfDivId(listOfFuflos, e.target.id);
+						location.hash = listOfFuflos[itemIndex].id;
+						showCardPage(listOfFuflos);
+					}
+
+					window.scrollTo(0,0);
+				}else if(e.target.className === 'fas fa-chevron-left' || e.target.className === 'title_back'){ //BACK Кнопка назад на главную страницу
+					
+					location.hash = '';
+				}else if(e.target.className === 'fas fa-times'){ //X
+					input.value = '';
+					document.querySelector('#times').style.display = 'none';
+					searchAndShowList(listOfFuflos);
+				}else if(e.target.className === 'pageUp' || e.target.className === 'fas fa-arrow-up'){//PAGE UP
+					window.scrollTo(0, 0);
+				}
+			}
+
+			document.onscroll = function(){
+				showOrHidePageUpArrow();
+			}
+		}
+
+
+
+
+
+		// #Functions
+
+		firstAidKitData = {
+			briefly:[
+				{
+					classification: 'Персональные',
+					overview: 'Прописанные медицинские препараты, которые Вы принимаете каждый день по назначению врача.',
+					medicines: []
+				},
+				{
+					classification: 'Обезболивающие',
+					overview: 'Противовоспалительное, жаропонижающее, болеутоляющее. Аспирин не давать детям до 16 лет.',
+					medicines: [
+						{ medicine: 'Парацетамол', activeSubstance: 'Парацетамол' },
+						{ medicine: 'Ибупрофен', activeSubstance: 'Ибупрофен' },
+						{ medicine: 'Аспирин', activeSubstance: 'Ацетилсалициловая кислота' }
+					]
+				},
+				{
+					classification: 'Антисептики',
+					overview: 'Противомикробный препарат. Для обработки рук, ран, предметов.',
+					medicines: [
+						{ medicine: 'Хлоргексидин', activeSubstance: 'Хлоргексидин' },
+						{ medicine: 'Повидон-йод ', activeSubstance: 'Повидон-йод' }
+					]
+				},
+				{
+					classification: 'Антигистаминные',
+					overview: 'При аллергии и укусах.',
+					medicines: [
+						{ medicine: 'Лоратадин, Кларитин', activeSubstance: 'Лоратадин' },
+						{ medicine: 'Цетиризин, Зиртек', activeSubstance: 'Цетиризин' },
+						{ medicine: 'Димедрол', activeSubstance: 'Дифенгидрамин' },
+						{ medicine: 'Аллегра', activeSubstance: 'Фексофенадин' }
+						
+					]
+				},
+				{
+					classification: 'Противодиарейные',
+					overview: 'При диарее и рвоте. Не рекомендуется давать детям до 12 лет.',
+					medicines: [
+						{ medicine: 'Имодиум, Лоперамид', activeSubstance: 'Лоперамид' }
+					]
+				},
+				{
+					classification: 'При изжоге и расстройстве желудка',
+					overview: 'Болит живот или изжога.',
+					medicines: [
+						{ medicine: 'Маалокс', activeSubstance: 'Алгелдрат + Магния гидроксид' },
+						{ medicine: 'Гевискон', activeSubstance: 'Кальция карбонат, Натрия гидрокарбонат, Натрия алгинат' },
+						{ medicine: 'Ренни', activeSubstance: 'Кальция карбонат + Магния карбонат' },
+						{ medicine: 'Омепразол', activeSubstance: 'Омепразол' }
+
+					]
+				}
+			],
+			detailed:[
+				{
+					classification: 'Персональные',
+					overview: '<p>Прописанные медицинские препараты, которые Вы принимаете каждый день по назначению врача <a href="https://encyclopatia.ru/wiki/%D0%90%D0%BF%D1%82%D0%B5%D1%87%D0%BA%D0%B0#:~:text=%D0%9F%D1%80%D0%BE%D0%BF%D0%B8%D1%81%D0%B0%D0%BD%D0%BD%D1%8B%D0%B5%20%D0%BC%D0%B5%D0%B4%D0%B8%D1%86%D0%B8%D0%BD%D1%81%D0%BA%D0%B8%D0%B5%20%D0%BF%D1%80%D0%B5%D0%BF%D0%B0%D1%80%D0%B0%D1%82%D1%8B%2C%20%D0%BA%D0%BE%D1%82%D0%BE%D1%80%D1%8B%D0%B5%20%D0%92%D1%8B%20%D0%BF%D1%80%D0%B8%D0%BD%D0%B8%D0%BC%D0%B0%D0%B5%D1%82%D0%B5%20%D0%BA%D0%B0%D0%B6%D0%B4%D1%8B%D0%B9%20%D0%B4%D0%B5%D0%BD%D1%8C%2C%20%D0%BD%D0%B0%D0%BF%D1%80%D0%B8%D0%BC%D0%B5%D1%80%20%D0%B8%D0%BD%D1%81%D1%83%D0%BB%D0%B8%D0%BD%2C%20%D0%BB%D0%B5%D0%BA%D0%B0%D1%80%D1%81%D1%82%D0%B2%D0%B0%20%D0%B4%D0%BB%D1%8F%20%D1%81%D0%B5%D1%80%D0%B4%D1%86%D0%B0%20%D0%B8%20%D0%B8%D0%BD%D0%B3%D0%B0%D0%BB%D1%8F%D1%82%D0%BE%D1%80%D1%8B" target="_blank">[1]<a/>.</p>'
+				},
+				{
+					classification: 'Обезболивающие',
+					overview: `<p>Парацетамол, ибупрофен или аспирин (аспирин не давать детям до 16 лет). Очень эффективны при облегчении большинства незначительных болей, таких как головные боли и менструальные боли.Эти лекарства также помогают при некоторых незначительных заболеваниях, таких как простуда, уменьшая ломоту, боль и высокие температуры. Парацетамол, ибупрофен и аспирин также помогают уменьшить воспаление, вызванное  артритом и растяжениями.<a href="https://www.nhs.uk/common-health-questions/accidents-first-aid-and-treatments/what-should-i-keep-in-my-first-aid-kit" target="_blank">[2]</a>
+						</p>
+
+						<details>
+							<summary>Парацетамол</summary>
+							<p>
+								<b><a href="https://ru.wikipedia.org/wiki/%D0%9F%D0%B0%D1%80%D0%B0%D1%86%D0%B5%D1%82%D0%B0%D0%BC%D0%BE%D0%BB" target="_blank">Парацетамол</a></b>
+							</p>
+
+							<p>
+
+							Рекомендации от NHS, Mayo Clinic.
+							</p>
+
+							<p><b>Исследования</b></p>
+							В Pubmed: 3170 РКИ и 320 метаанализов.<br>
+							Cochrane Reviews: 126;<br>
+							FDA: +. Под названием Ацетаминофен;<br>
+							RxList: +. Под названием Ацетаминофен;<br>
+							Drugs: +. И под названием Ацетаминофен, и под названием Парацетамол;<br>
+						</details>
+
+						<details>
+							<summary>Ибупрофен</summary>
+							<p>
+								<b><a href="https://ru.wikipedia.org/wiki/%D0%98%D0%B1%D1%83%D0%BF%D1%80%D0%BE%D1%84%D0%B5%D0%BD" target="_blank">Ибупрофен</a></b>
+							<p>
+
+							<p><b>Рекомендации от.</b></p>
+
+							<p><b>Исследования</b></p>
+
+							В Pubmed: 1586 РКИ и 320 метаанализов;<br>
+							Cochrane Reviews: 111;<br>
+							FDA: +;<br>
+							RxList: +;<br>
+							Drugs: +;<br>
+						</details>
+							
+						<details>
+							<summary>Аспирин</summary>
+							<p>
+								<b><a href="https://ru.wikipedia.org/wiki/%D0%90%D1%86%D0%B5%D1%82%D0%B8%D0%BB%D1%81%D0%B0%D0%BB%D0%B8%D1%86%D0%B8%D0%BB%D0%BE%D0%B2%D0%B0%D1%8F_%D0%BA%D0%B8%D1%81%D0%BB%D0%BE%D1%82%D0%B0" target="_blank">Аспирин</a></b>
+							<p>
+							Рекомендации от .
+
+							<p><b>Исследования</b></p>
+
+							В Pubmed: 5453 РКИ и 1165 метаанализов;<br>
+							Cochrane Reviews: 109;<br>
+							FDA: +;<br>
+							RxList: +;<br>
+							Drugs: +;<br>
+						</details>`
+				}
+			],
+			sources: [
+				{title: 'Аптечка', 'link': 'https://encyclopatia.ru/wiki/%D0%90%D0%BF%D1%82%D0%B5%D1%87%D0%BA%D0%B0', titleOfSource: 'Encyclopatia'},
+				{title: 'What should I keep in my first aid kit?', 'link': 'https://www.nhs.uk/common-health-questions/accidents-first-aid-and-treatments/what-should-i-keep-in-my-first-aid-kit/', titleOfSource: 'National Health Service'},
+				{title: 'Paracetamol for adults', 'link': 'https://www.nhs.uk/medicines/paracetamol-for-adults/', titleOfSource: 'National Health Service'},
+				{title: 'Paracetamol for children (including Calpol)', 'link': 'https://www.nhs.uk/medicines/paracetamol-for-children/' , titleOfSource: 'National Health Service'},
+				{title: 'First-aid kits: Stock supplies that can save lives', 'link': 'https://www.mayoclinic.org/first-aid/first-aid-kits/basics/art-20056673', titleOfSource: 'Mayo Clinic'},
+				{title: 'WHO model list of essential medicines - 22nd list, 2021', 'link': 'https://apps.who.int/iris/rest/bitstreams/1374779/retrieve', titleOfSource: 'World Health Organization'},
+				{title: 'Перечень жизненно необходимых и важнейших лекарственных препаратов для медицинского применения (ред. от 23.11.2020)', 'link': 'https://roszdravnadzor.gov.ru/i/upload/images/2021/2/8/1612773234.82353-1-35415.docx', titleOfSource: 'Федеральная служба по надзору в сфере здравоохранения'},
+				{title: 'Home First Aid Kit', 'link': 'https://www.emergencyphysicians.org/article/health--safety-tips/home-first-aid-kit', titleOfSource: 'American College of Emergency Physicians'},
+				{title: 'Туристическая аптечка', 'link': 'https://medspecial.ru/for_patients/51/15420/', titleOfSource: 'Доказательная медицина для всех'},
+
+			]
+		}
+
+		
+
+		function showfirstAidKitCard(){
+			container.innerHTML = '';
+			let firstAidKit = document.createElement('div');
+			firstAidKit.id = 'firstAidKit';
+			firstAidKit.className = 'cardContainerWrapper';
+			let cardContainer = document.createElement('div');
+			cardContainer.className = 'cardContainer';
+			let card = document.createElement('div');
+			card.className = 'card';
+			let h2 = document.createElement('h2');
+			h2.textContent = 'Аптечка';
+			let p = document.createElement('p');
+			p.className = 'small';
+			p.innerHTML = 'Перед использованием лекарства <b>обязательно</b> читайте инструкцию к нему. Этот текст здесь не для простой формальности. Это призыв к действию.';
+			let h3 = document.createElement('h3');
+			h3.textContent = 'Кратко';
+			container.appendChild(firstAidKit);
+			firstAidKit.appendChild(cardContainer);
+			cardContainer.appendChild(card);
+			card.appendChild(h2);
+			card.appendChild(h2);
+			card.appendChild(p);
+			card.appendChild(h3);
+
+			showFirstAidBriefly(firstAidKitData.briefly, card, true);
+			card.innerHTML += `<p class="small-bold">Если в аптеке нет нужного лекарства, то ищите аналогичное по действующему веществу. И конечно же смотрите инструкцию к применению.</p>
+				<h3>Подробно</h3>
+				<details>
+					<summary>Подробно</summary>`;
+			showFirstAidDetailed(firstAidKitData.detailed, card);
+			showSources(firstAidKitData.sources, card);
+			
+		}
+
+
+
+
+		function showFirstAidBriefly(data, card, isBriefly){
+			let ol = document.createElement('ol');
+			ol.className = 'brieflyOl';
+
+			for(let i = 0;i < data.length;i++){
+				let li = document.createElement('li');
+				let b = document.createElement('b');
+				li.appendChild(b);
+				b.textContent = data[i].classification;
+
+				let p = document.createElement('p');
+				p.className = 'overview';
+				p.innerHTML = data[i].overview;
+				li.appendChild(p);
+				ol.appendChild(li);
+				if(isBriefly){
+					let ul = document.createElement('ul');
+					ul.className = 'brieflyUl';
+					
+					console.log(data[i].medicines.length);
+					for(let j = 0;j < data[i].medicines.length;j++){
+						if(data[i].medicines.length !== 0){
+							let lil = document.createElement('li');
+							lil.textContent = data[i].medicines[j].medicine + ' (Дейст. вещество - ' + data[i].medicines[j].activeSubstance + ')';
+							ul.appendChild(lil);
+						}
+					}
+					ol.appendChild(ul);
+				}
+				
+			}
+
+			card.appendChild(ol);
+		}
+
+
+		function showFirstAidDetailed(data, card){
+			
+			let liItems = '';
+			for(let i = 0;i < data.length; i++){
+				liItems += `
+					<li><b>${data[i].classification}</b>
+						<p class="overview">${data[i].overview}</p>
+					</li>`
+			}
+			card.innerHTML += `<ol class="brieflyOl">${liItems}</ol>`;
+		}
+
+		function showSources(data, card){
+			// <div class="sources">
+// 				<p><b>Источники</b></p>
+// 				<ol>
+			let sources = document.createElement('div');
+			sources.className = 'sources';
+			let p = document.createElement('p');
+			let b = document.createElement('b');
+			b.textContent = 'Источники';
+			card.appendChild(sources);
+			sources.appendChild(p);
+			p.appendChild(b);
+			let ol = document.createElement('ol');
+			
+			for(let i = 0;i < data.length;i++){
+				console.log(1);
+				ol.innerHTML += `<li><a href="${ data[i].link }">${ data[i].title }</a>. ${data[i].titleOfSource !== undefined ? data[i].titleOfSource : ''}</li>`
+			}
+			sources.appendChild(ol);
+			card.innerHTML += `</details>`;
+		}
+
+
+		
+
+		function showfirstAidKitBlock(){
+			// firstAidKitDiv.innerHTML = `<div class="innerContainer">
+			// 														<div id="firstAidKit" class="block">
+			// 															<div id="firstAidKit" class="fillBlock"></div>
+			// 															<p>Аптечка</p>
+			// 														</div>
+			// 													</div>`;
+
+			firstAidKitDiv.innerHTML = '';
+ 			let innerContainerDiv = document.createElement('div');
+			innerContainerDiv.className = 'innerContainer';
+			container.appendChild(innerContainerDiv);
+
+					
+			let div = document.createElement('div');
+			div.className = 'block';
+			let innerDiv = document.createElement('div');
+			innerDiv.id = 'firstAidKit';
+			innerDiv.className = "fillBlock";
+			let p = document.createElement('p');
+			p.textContent = 'Аптечка';
+			let span = document.createElement('span');
+			span.textContent = 'На основе доказательной медицины';
+			
+			
+		
+
+			div.appendChild(innerDiv);
+			div.appendChild(p);
+			div.appendChild(span);
+	
+			innerContainerDiv.appendChild(div);
+			firstAidKitDiv.appendChild(innerContainerDiv);
+
+		}
+
+		function hideFirstAidKitBlock(){
+			document.querySelector('.firstAidKit').innerHTML = '';
+		}
+
+		function showMainPage(list, inpVal){
+			if(inpVal === undefined) inpVal = '';
+			showDefaultHeader(inpVal);
+			let findItems = search(list, inpVal);
+			showAmountOfFuflomicines(findItems.length);
+			showListOfFuflomicines(findItems);
+
+		}
+
+		function showOrHideTimes(inputValue){
+			if(inputValue === '' || inputValue === undefined){
+				document.querySelector('#times').style.display = 'none';
+			}else{
+				document.querySelector('#times').style.display = 'block';
+			}
+		}
+
+
+		function showCardPage(list){
+			for(let i = 0;i < list.length;i++){
+				console.log();
+				if(location.hash === '#' + encodeURIComponent(list[i].id)){
+					showBackHeader(list[i].title);
+					showCard(list[i]);
+					return;
+				}
+			}
+			showNotFoundPage();
+		}
+		
+
+		function showDefaultHeader(title){
+			// <img class="headerGif" src="https://i.gifer.com/fyrV.gif"/>
+			header.innerHTML = `<div>
+									<i class="fas fa-search"></i>
+									<p id="amountOfMeds"></p>
+								</div>
+								<h2 class="headerFuflomicines"><a class="headerTitleLink" href="/fuflomicini">Фуфломицины</a></h2>
+								
+								<input id="input" type="" name="" value="${title}" placeholder="Поиск..."><i id="times" class="fas fa-times"></i>
+								<a style="tap-highlight-color: transparent;-webkit-tap-highlight-color: transparent;" href="info.html"><i class="far fa-info-circle"></i></a>`
+		}
+
+
+		function showAmountOfFuflomicines(amount){
+			document.querySelector("#amountOfMeds").textContent = amount;
+		}
+
+
+		function showBackHeader(title){
+			header.innerHTML = `<div>
+									<i class="fas fa-chevron-left"></i>
+								</div>
+								<p class="title_back">${title}</p>`;
+		}
+
+		function showOrHidePageUpArrow(){
+			if(window.scrollY > window.innerHeight && aVal){
+				pageUpDiv.style.display = 'flex';
+				setTimeout(function(){
+					pageUpDiv.style.opacity = '1';
+				},10);
+				aVal = false;
+				bVal = true;
+			}else if(window.scrollY < window.innerHeight && bVal){
+				pageUpDiv.style.opacity = '0';
+				setTimeout(function(){
+					pageUpDiv.style.display = 'none';
+				},300);
+				bVal = false;
+				aVal = true;
+			}
+		}
+
+
+		function searchAndShowList(list){
+			window.scrollTo(0,0);
+			scrollY = 0;
+			inpVal = document.querySelector("#input").value;
+			let findItems = search(list, inpVal);
+			setTimeout(function(){ // Асинхронный поиск, чтобы было меньше зависаний UI.
+				if(findItems.length === 0){
+					if(!'аптечка'.includes(inpVal.toLowerCase())){
+						hideFirstAidKitBlock();
+						showEmptySearchPage();
+						return;
+					}
+					
+				}
+				showAmountOfFuflomicines(findItems.length);
+				showListOfFuflomicines(findItems);
+			},50);
+		}
+
+		function showEmptySearchPage(){
+			// <div id="container"></div>
+			// <img class="notFoundGif" src="https://i.gifer.com/5l0.gif">
+			container.innerHTML = ` <div class="notFoundPopUp">
+										<div id="container"></div>							
+										<h2>Кажется ничего не найдено</h2>
+										<p>Если вы считаете, что данный препарат должен быть в нашем списке, напишите нам</p><b><a href="mailto:${emailSupport}">${emailSupport}</a></b>
+								    </div>`;
+			var animation = bodymovin.loadAnimation({
+		      // animationData: { /* ... */ },
+		      container: document.getElementById('container'), // required
+		      path: 'ship_empty.json', // required
+		      renderer: 'svg', // required
+		      loop: true, // optional
+		      autoplay: true, // optional
+		      name: "Empty search", // optional
+		   });
+		}
+
+
+		function showNotFoundPage(){
+			hideFirstAidKitBlock();
+			header.innerHTML = '<h2 class="headerFuflomicines" style="margin-left:25px; display: block;"><a class="headerTitleLink" href="/fuflomicini">Фуфломицины</a></h2>';
+			container.innerHTML = ` <div class="notFoundPopUp">
+										<div id="container"></div>
+										<h2>Такой страницы нет</h2>
+										<p>Если вы считаете, что данная ошибка произошла по нашей вине, напишите нам</p><b><a href="mailto:${emailSupport}">${emailSupport}</a><b>
+								    </div>`;
+			var animation = bodymovin.loadAnimation({
+		      container: document.getElementById('container'), // required
+		      path: 'error-404-page.json', // required
+		      renderer: 'svg', // required
+		      loop: true, // optional
+		      autoplay: true, // optional
+		      name: "Not Found", // optional
+		   });
+		}
+
+		
+		function showListOfFuflomicines(listOfFuflos){ //Показывает список препаратов. Список создается через createDocument, а не через innerHTML для производительности. Остальные функции создают через innerHTML для удобства чтения. 
+			container.innerHTML = '';
+			
+			let innerContainerDiv = document.createElement('div');
+			innerContainerDiv.className = 'innerContainer';
+			container.appendChild(innerContainerDiv);
+			setTimeout(createMedList,10);
+			function createMedList(){
+				for (var i = 0; i < listOfFuflos.length; i++) {
+					
+					let div = document.createElement('div');
+					div.className = 'block';
+					let innerDiv = document.createElement('div');
+					innerDiv.id = listOfFuflos[i].id;
+					innerDiv.className = "fillBlock";
+					let p = document.createElement('p');
+					p.textContent = listOfFuflos[i].title;
+					let span = document.createElement('span');
+					span.textContent = spanIfHaveAnalogTitles(listOfFuflos[i].other);
+					// let divArrow = document.createElement('div');
+					// divArrow.className = 'arrowRight';
+					// let iElem = document.createElement('i');
+					// iElem.className = 'fas fa-chevron-right';
+
+					div.appendChild(innerDiv);
+					div.appendChild(p);
+					div.appendChild(span);
+					// divArrow.appendChild(iElem);
+					// div.appendChild(divArrow);
+					innerContainerDiv.appendChild(div);
+					// showfirstAidKitBlock();
+					
+					//Как это выглядит в html
+					// <div class="block">
+					// 		<div id="arbidol" class="fillBlock"></div>
+					// 		<p>Арбидол</p>
+					// 		<span>Мебикар, Мебикс, Adaptol, Meb...</span>
+					//		<div>
+					//			<i class="fas fa-chevron-left"></i>
+					//		</div>
+					// </div>
+				}
+				window.scrollTo(0,scrollY);
+			}
+			
+
+			function spanIfHaveAnalogTitles(other){
+				analogTitles = ''
+				if (other.length == 0){
+					return '';
+				}else{
+					for(let i = 0;i < other.length;i++){
+						analogTitles += other[i] + (i !== other.length-1 ? ', ' : '')
+					}
+					return analogTitles;
+				}
+			}
+			
+		}
+
+
+		function showCard(rspItem){ //Показывает препарат с информацией о нем. Аргумент - объект с инфой о перпарате
+			// div.removeChild(div.firstChild);
+
+			// let cardContainerWrapperDiv = document.createElement('div');
+			// cardContainerWrapperDiv.className = 'cardContainerWrapper';
+
+			// let cardContainerDiv = document.createElement('div');
+			// cardContainerDiv.className = 'cardContainer';
+
+			// let cardDiv = document.createElement('div');
+			// cardDiv.className = 'card';
+
+			// let wrapperImgDiv = document.createElement('div');
+			// wrapperImgDiv.className = 'wrapperImg';
+
+
+			
+
+			// let wrapperTitleAndLinkDiv = document.createElement('div');
+			// wrapperTitleAndLinkDiv.className = 'wrapperTitleAndLink';
+
+			// let h3Div = document.createElement('h3');
+			// let bDiv = document.createElement('b');
+			// bDiv.textContent = rspItem.title;
+
+			// let aDiv2 = document.createElement('a');
+			// aDiv2.href = rspItem.source;
+			// aDiv2.target = '_blank';
+			// //TODO: Add target attribute
+
+			// let iDiv = document.createElement('i');
+			// iDiv.className = 'fa-solid fa-link-simple';
+
+			// let analogTitlesP = document.createElement('p');
+			// analogTitlesP.className = 'analogTitles';
+			// analogTitlesP.textContent = JSON.stringify(rspItem.other).replaceAll(',',', ').replace(/[\]\"[]/gi,'');
+
+			// let hrForCardHr = document.createElement('hr');
+			// hrForCardHr.className = 'hrForCard';
+
+			// let cardDiv2 = document.createElement('div');
+			// cardDiv2.className = 'card';
+
+			// let iDiv2 = document.createElement('i');
+			// iDiv2.className = 'fas fa-frown';
+			// iDiv2.style.color = rspItem.label;
+
+			// let sectionSpan = document.createElement('span');
+			// sectionSpan.className = 'section';
+			// sectionSpan.textContent = rspItem.section;
+
+			// let contentP = document.createElement('p');
+			// contentP.innerHTML = rspItem.contents;
+
+
+			
+			// cardContainerWrapperDiv.appendChild(cardContainerDiv);
+			// cardContainerDiv.appendChild(cardDiv);
+			// cardDiv.appendChild(wrapperImgDiv);
+
+			// if(rspItem.photo !== null && rspItem.photo !== undefined){// Если есть фото препарата, то добавляем элементы для фото
+			// 	let aDiv = document.createElement('a');
+			// 	aDiv.href = photoBaseUrl + rspItem.photo;
+
+			// 	let imgDiv = document.createElement('img');
+			// 	imgDiv.className = 'photoOfMed';
+			// 	imgDiv.src = photoBaseUrl + rspItem.photo;
+
+			// 	let pDiv = document.createElement('p');
+			// 	pDiv.className = 'photo warning';
+			// 	pDiv.textContent = 'Внешний вид товара может отличаться от изображённого на фотографии';
+
+			// 	wrapperImgDiv.appendChild(aDiv);
+			// 	aDiv.appendChild(imgDiv);
+			// 	cardDiv.appendChild(pDiv);
+			// }
+
+			// cardDiv.appendChild(wrapperTitleAndLinkDiv);
+			// wrapperTitleAndLinkDiv.appendChild(h3Div);
+			// h3Div.appendChild(bDiv);
+			// wrapperTitleAndLinkDiv.appendChild(aDiv2);
+			// aDiv2.appendChild(iDiv);
+
+			// cardDiv.appendChild(analogTitlesP);
+
+			// cardContainerDiv.appendChild(hrForCardHr);
+			// cardContainerDiv.appendChild(cardDiv2);
+
+			// cardDiv2.appendChild(iDiv2);
+			// cardDiv2.appendChild(sectionSpan);
+			// cardDiv2.appendChild(contentP);
+
+			// container.appendChild(cardContainerWrapperDiv);
+
+			container.innerHTML = `
+								<div class="cardContainerWrapper">
+									<div class="cardContainer">
+										<div class="card">
+											<div class="wrapperImg">
+												${(rspItem.photo !== null && rspItem.photo !== undefined) ? '<a href="https://raw.githubusercontent.com/fuflomycin/fuflomycin/master/docs/img/' + rspItem.photo +'"><img class="photoOfMed" src="https://raw.githubusercontent.com/fuflomycin/fuflomycin/master/docs/img/' + rspItem.photo + '"/></a>' : ''}
+											</div>
+											${(rspItem.photo !== null && rspItem.photo !== undefined) ? '<p class="photo warning">Внешний вид товара может отличаться от изображённого на фотографии</p>' : ''}
+											<div class="wrapperTitleAndLink">
+												<h3><b>${rspItem.title}</b></h3>
+												<a href="${rspItem.source}" target="_blank"><i class="fa-solid fa-link-simple"></i></a>
+											</div>
+
+
+											<p class="analogTitles">${JSON.stringify(rspItem.other).replaceAll(',',', ').replace(/[\]\"[]/gi,'')}</p>
+										</div>
+											<div class="hrForCard"></div>
+										<div class="card">
+											<i class="fas fa-frown" style="color: ${rspItem.label};"></i>
+											<span class="section">${rspItem.section}</span>
+											<p class="content">${rspItem.contents}</p>
+										</div>
+									<div/>
+								<div/>`;
+
+		}
+
+
+		function search(listOfFuflos, word){ //Поиск препаратов
+			let includeItems = [];
+			let prevItemId;
+			for(let i = 0;i < listOfFuflos.length;i++){
+				if (listOfFuflos[i].title.toLowerCase().includes(word.toLowerCase())){
+					includeItems.push(listOfFuflos[i]);
+					prevItemId = listOfFuflos[i].id;
+				}
+				for(let j = 0;j < listOfFuflos[i].other.length;j++){
+					if (listOfFuflos[i].other[j].toLowerCase().includes(word.toLowerCase())){
+						if (prevItemId !== listOfFuflos[i].id){
+							includeItems.push(listOfFuflos[i])
+						}
+						break;
+					}
+				}
+			}
+			return includeItems;
+		}
+
+
+		function findIndexOfDivId(list,elemId){
+			let itemIndex;
+			for(let i = 0;i < list.length;i++){
+				if(elemId === list[i].id){
+					itemIndex = i; 
+					break;
+				}
+			}
+			return itemIndex;
+		}
+
+
+		function quickSort(arr) {
+			if (arr.length < 2) return arr;
+			let min = 1;
+			let max = arr.length - 1;
+			let rand = Math.floor(min + Math.random() * (max + 1 - min));
+			let pivot = arr[rand];
+			const left = [];
+			const right = [];
+			arr.splice(arr.indexOf(pivot), 1);
+			arr = [pivot].concat(arr);
+			for (let i = 1; i < arr.length; i++) {
+		    	if (pivot.title.toLowerCase() > arr[i].title.toLowerCase()) {
+		      		left.push(arr[i]);
+			    } else {
+			      right.push(arr[i]);
+			    }
+		  	}
+		  	return quickSort(left).concat(pivot, quickSort(right));
+		}
+
+
+		function binarySearchModificated(list, value) {
+		    let first = 0;    //left endpoint
+		    let last = list.length - 1;   //right endpoint
+		    let position = -1;
+		    let found = false;
+		    let middle;
+		    let arra = [];
+		    while (found === false && first <= last) {
+		        middle = Math.floor((first + last)/2);
+		        if (list[middle].title.toLowerCase() < value) {
+		            // found = true;
+		            position = middle;
+		            arra.push(position)
+		        } else if (list[middle].title.toLowerCase() > value) {  //if in lower half
+		            last = middle - 1;
+		        } else {  //in in upper half
+		            first = middle + 1;
+		        }
+		    }
+		    return arra;
+		}
+	})();
+	
+</script>
+</body>
+</html>

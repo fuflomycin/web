@@ -1,0 +1,521 @@
+html,body{
+		padding: 0;
+		margin: 0;
+		/*font-family: 'Roboto', sans-serif;*/
+		font-family: 'Nunito',sans-serif;
+	}
+
+
+	.block p{
+		font-weight: 600;
+	}
+
+	
+	#header input{
+		font-family: 'Nunito',sans-serif;
+	}
+	
+
+
+	h2, h3, #header .title_back{
+		font-family: 'Montserrat';
+		tap-highlight-color: transparent;
+		-webkit-tap-highlight-color: transparent;
+	}
+
+	.container{
+		padding: 76px 20px 0;
+	}
+
+
+
+
+	.cardContainer{
+		max-width: 1000px;
+		margin: 20px auto 20px;
+		border-radius: 6px;
+		box-shadow: 0 4px 50px -12px rgb(17 12 46 / 27%);
+		padding: 0 10px;
+	}
+
+	#header{
+		position: fixed;
+		width: 100%;
+		display: -webkit-box;
+		display: -ms-flexbox;
+		display: flex;
+		-webkit-box-align: center;
+		    -ms-flex-align: center;
+		        align-items: center;
+		background: #ff595b;
+		padding: 20px 0px;
+		height: 36px;
+		z-index: 999;
+	}
+
+	#header .fas.fa-search{
+		color: white;
+		padding: 10px 20px;
+	}
+
+	#header .fas.fa-chevron-left{
+		font-size: 28px;
+		color: white;
+		padding: 10px 20px;
+		cursor: pointer;
+		tap-highlight-color: transparent;
+		-webkit-tap-highlight-color: transparent;
+	}
+
+	#header .title_back{
+		color: white;
+	    font-size: 21px;
+	    font-weight: bold;
+	    cursor: pointer;
+	}
+
+	#header #amountOfMeds{
+		padding-left: 10px;
+		padding-right: 10px;
+		margin-top: 0;
+		margin-bottom: 0;
+		color: white;
+		text-align: center;
+	}
+
+	#header .headerFuflomicines{
+		color: white;
+		padding-right: 20px;
+	}
+
+	#header .headerFuflomicines a{
+		text-decoration: none;
+		color: white;
+	}
+
+	#header .headerGif{
+		position: absolute;
+		height: 55px;
+		padding-right: 20px;
+	}
+
+	#header .fas.fa-times{
+		position: absolute;
+		right: 60px;
+		padding: 14px 20px;
+		color: grey;
+		font-size: 20px;
+		cursor: pointer;
+		display: none;
+	}
+
+	#header .far.fa-info-circle{
+		font-size: 25px;
+		color: white;
+		padding: 15px;
+	}
+
+	#header input{
+		width: 100%;
+		height: 40px;
+		border: none;
+		border-radius: 3px;
+		padding: 5px 5px;
+		outline: none;
+		font-size: 18px;
+		padding-left: 10px;
+	}
+
+	#container{
+		width: 300px;
+	}
+
+	.block .fillBlock{
+		position: absolute;
+	    width: 100%;
+	    height: 100%;
+	    left: 0;
+	    top: 0;
+	    tap-highlight-color: transparent;
+	    -webkit-tap-highlight-color: transparent;
+	    cursor: pointer;
+	}
+
+	.block{
+		position: relative;
+		padding: 14px 42px 14px 20px;
+		border-bottom: 1px solid grey;
+	}
+
+	.block:last-child{
+		border-bottom: none;
+	}
+
+	.block p{
+		margin:0;
+	}
+
+	.block span{
+		margin-top:5px;
+		font-size: 14px;
+		color:grey;
+	}
+
+	.block .arrowRight{
+		position: absolute;
+    	right: 20px;
+    	top: calc(50% - 9px);
+    	color: #ff595b;
+	}
+
+	.card{
+		padding: 10px 20px;
+	}
+
+
+
+	/*.card h2{
+		font-family: 'Roboto';
+	}*/
+
+
+	.card .wrapperImg{
+		width: 300px;
+		margin: 0 auto;
+		display: flex;
+		justify-content: center;
+	}
+
+	.card .photoOfMed{
+		max-width: 300px;
+	}
+
+	.card .photo.warning{
+		font-size: 12px;
+		text-align: center;
+		font-weight: bold;
+		color: grey;
+	}
+
+	.card .wrapperTitleAndLink{
+		display: -webkit-box;
+		display: -ms-flexbox;
+		display: flex;
+		-webkit-box-pack: justify;
+		    -ms-flex-pack: justify;
+		        justify-content: space-between;
+		-webkit-box-align: center;
+		    -ms-flex-align: center;
+		        align-items: center;
+		height: 46px;
+	}
+
+
+
+	.card .analogTitles{
+		color: grey;
+		font-size: 14px;
+		margin-top: 0;
+		margin-bottom: 0;
+		
+	}
+
+
+	.card .fas.fa-frown{
+		margin-right: 10px;
+	}
+
+	.fa-solid.fa-link-simple{
+		font-size: 20px;
+	}
+
+	.hrForCard{
+		width: 100%;
+		height: 1px;
+		background-color: #c0c0c0;
+		margin: 0;
+	}
+
+	.pageUp{
+		display: none;
+	    justify-content: center;
+	    align-items: center;
+	    position: fixed;
+	    right: 50px;
+	    bottom: 40px;
+	    width: 50px;
+	    height: 50px;
+	    border-radius: 50%;
+	    background-color: white;
+	    box-shadow: 0px 0px 22px -1px rgb(17 12 46 / 27%);
+	    cursor: pointer;
+	    tap-highlight-color: transparent;
+	    -webkit-tap-highlight-color: transparent;
+	    opacity: 0;
+	    transition: .3s;
+	}
+
+
+	.notFoundPopUp{
+		width: 100%;
+		height: calc(100vh - 76px);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-direction: column;
+		text-align: center;
+	}
+
+	.notFoundPopUp p{
+		margin-top: 0;
+	}
+
+	
+
+	.notFoundPopUp a{
+		padding-bottom: 20px;
+	}
+
+	.notFoundGif{
+		width: 300px;
+		border-radius: 20px;
+	}
+
+	.innerContainer{
+		max-width: 1000px;
+	    box-shadow: 0 4px 50px -12px rgb(17 12 46 / 27%);
+	    margin: 20px auto;
+	    border-radius: 6px;
+	}
+
+	
+
+	#firstAidKit h2{
+		text-align: center;
+	}
+
+	#firstAidKit .sources{
+		word-break: break-all;
+	}
+
+	.small{
+		font-size: 14px;
+	}
+
+	.small-bold{
+		font-size: 14px;
+		font-weight: bold;
+	}
+
+	#firstAidKit .overview{
+		margin: 0;
+	}
+
+	
+
+	/*Mediaquery*/
+
+	@media screen and (max-width: 720px) {
+		.cardContainerWrapper{
+			padding: 0;
+		}
+
+		.cardContainer{
+			padding: 0;
+		}
+
+
+
+		.notFoundGif{
+			width: 300px;
+			border-radius: 20px;
+		}
+
+		#header {
+			position: fixed;
+			height: 12px;
+		}
+
+		.container{
+			padding: 52px 0 0 0;
+		}
+
+		.cardContainer{
+			width: auto;
+			margin: 0;
+			border-radius: 0;
+			box-shadow: none;
+		}
+
+		#header .headerFuflomicines{
+			display: none;
+		}
+
+		#header .fas.fa-search {
+		    padding: 5px 13px;
+		}
+
+		#header .fas.fa-times{
+			right: 46px;
+    		padding: 6px 14px;
+		}
+
+
+		#header .far.fa-info-circle{
+			padding: 10px;
+		}
+
+		#header #amountOfMeds{
+			font-size: 11px;
+		}
+
+		#header input {
+			height: 25px;
+		}
+
+		#header .fas.fa-chevron-left {
+			font-size: 18px;
+		}
+
+		#header .title_back {
+			font-size: 18px;
+		}
+
+		.innerContainer{
+			width: auto;
+		    box-shadow: none;
+		    margin: 0;
+		    border-radius: 0;
+		}
+
+		.block{
+			padding: 10px 42px 10px 10px;
+		}
+
+		.block:last-child{
+			border-bottom: 1px solid grey;
+		}
+
+		.card{
+			padding: 10px 15px;
+		}
+
+		.card .wrapperImg {
+		    display: -webkit-box;
+		    display: -ms-flexbox;
+		    display: flex;
+		    -webkit-box-pack: center;
+		        -ms-flex-pack: center;
+		            justify-content: center;
+		}
+
+
+		.card .photoOfMed {
+		    max-width: 150px;
+		}
+
+		.pageUp{
+			right: 28px;
+			bottom: 25px;
+		}
+
+		#firstAidKit ol{
+			padding-left: 20px;
+		}
+
+		#firstAidKit ul{
+			padding-left: 20px;
+		}
+
+	}
+
+
+	/*!
+ * Font Awesome Pro 6.0.0-alpha2 by @fontawesome - https://fontawesome.com
+ * License - https://fontawesome.com/license (Commercial License)
+ */
+.fa {
+  font-family: "Font Awesome 6 Pro";
+  font-family: var(--fa-style-family, "Font Awesome 6 Pro");
+  font-weight: 900;
+  font-weight: var(--fa-style, 900); }
+
+.fa,
+.fas,
+.fa-solid,
+.far,
+.fa-regular,
+.fal,
+.fa-light,
+.fat,
+.fa-thin,
+.fad,
+.fa-duotone,
+.fab,
+.fa-brands {
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  display: inline-block;
+  display: var(--fa-display, inline-block);
+  font-style: normal;
+  font-variant: normal;
+  text-rendering: auto;
+  color: inherit;
+  color: var(--fa-color, inherit); }
+
+
+
+.fa-link-simple::before {
+  content: "\e1db"; }
+
+.fa-chevron-left::before {
+  content: "\f053"; }
+
+.fa-chevron-right::before {
+  content: "\f054"; }
+
+.fa-chevron-up::before {
+  content: "\f077"; }
+
+.fa-chevrons-down::before {
+  content: "\f322"; }
+
+.fa-arrow-up::before {
+  content: "\f062"; }
+
+.fa-frown::before {
+  content: "\f119"; }
+
+.fa-search::before {
+  content: "\f002"; }
+
+.fa-info-circle::before {
+  content: "\f05a"; }
+
+ .fa-times::before {
+  content: "\f00d"; }
+
+
+@font-face {
+  font-family: 'Font Awesome 6 Pro';
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url("../webfonts/fa-regular-400.woff2") format("woff2"), url("../webfonts/fa-regular-400.woff") format("woff"), url("../webfonts/fa-regular-400.ttf") format("truetype"); }
+
+.far,
+.fa-regular {
+  font-family: 'Font Awesome 6 Pro';
+  font-weight: 400; }
+
+@font-face {
+  font-family: 'Font Awesome 6 Pro';
+  font-style: normal;
+  font-weight: 900;
+  font-display: block;
+  src: url("../webfonts/fa-solid-900.woff2") format("woff2"), url("../webfonts/fa-solid-900.woff") format("woff"), url("../webfonts/fa-solid-900.ttf") format("truetype"); }
+
+.fas,
+.fa-solid {
+  font-family: 'Font Awesome 6 Pro';
+  font-weight: 900; }
